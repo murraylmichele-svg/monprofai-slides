@@ -722,5 +722,6 @@ VISUEL: angle_droit
 NOTE_ENSEIGNANT: Faites trouver des angles droits dans la classe.
 """
 
-slides = parse_slides(CLAUDE_OUTPUT)
-create_presentation(slides, '4e route de soie')
+if __name__ == '__main__':
+    slides = parse_slides(CLAUDE_OUTPUT)
+    create_presentation(slides, 'Les Acadiens')
