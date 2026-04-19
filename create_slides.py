@@ -207,6 +207,14 @@ def auto_font_size(text):
         return 18
 
 def get_credentials():
+    service_account_data = os.environ.get('GOOGLE_SERVICE_ACCOUNT')
+    if service_account_data:
+        from google.oauth2 import service_account
+        info = json.loads(service_account_data)
+        creds = service_account.Credentials.from_service_account_info(
+            info, scopes=SCOPES)
+        return creds
+    # Local fallback — uses OAuth for desktop use
     creds = None
     if os.path.exists(TOKEN_FILE):
         creds = Credentials.from_authorized_user_file(TOKEN_FILE, SCOPES)
