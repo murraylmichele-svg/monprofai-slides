@@ -10,264 +10,186 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
-OAUTH_CLIENT_FILE = r'C:\Users\murra\OneDrive\Desktop\MonProf-Slides\client_secret_683032921562-bt2e92mvt6lse0j1l5if8hcs6ao1qd3g.apps.googleusercontent.com.json'
-TOKEN_FILE = r'C:\Users\murra\OneDrive\Desktop\MonProf-Slides\token.json'
+import json
+import tempfile
+
+OAUTH_CLIENT_FILE = None
+TOKEN_FILE = os.path.join(tempfile.gettempdir(), 'token.json')
+
+_oauth_data = os.environ.get('GOOGLE_OAUTH_CLIENT')
+if _oauth_data:
+    _tmp = tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False)
+    _tmp.write(_oauth_data)
+    _tmp.close()
+    OAUTH_CLIENT_FILE = _tmp.name
+else:
+    OAUTH_CLIENT_FILE = r'C:\Users\murra\OneDrive\Desktop\MonProf-Slides\oauth_client.json'
+    TOKEN_FILE = r'C:\Users\murra\OneDrive\Desktop\MonProf-Slides\token.json'
 SCOPES = ['https://www.googleapis.com/auth/presentations', 'https://www.googleapis.com/auth/drive']
 OUTPUT_FOLDER_ID = '13qSBTeNOaAEpdxEsDwF7vGj-9MJx2zxE'
 
-CLAUDE_OUTPUT = """
-NOMBRE DE DIAPOSITIVES : 18 | MATIÈRE : Études sociales | ATTENTE : Analyser l'information recueillie pour en faire l'interprétation en utilisant divers outils organisationnels
+CLAUDE_OUTPUT = """NOMBRE DE DIAPOSITIVES : 12 | MATIÈRE : Études sociales | ATTENTE : Décrire diverses situations qui engendraient des relations de coopération ou des conflits dans les sociétés anciennes
 
 ---DIAPOSITIVE 1---
 TYPE: TITRE
-TITRE: Analyser l'information historique avec des outils organisationnels
+TITRE: Le troc et les routes commerciales : coopération et conflits dans les sociétés anciennes
 CONTENU:
-• Apprendre à organiser et analyser l'information historique
-• Utiliser différents outils : lignes de temps, tableaux comparatifs, cartes, œuvres d'art
-• Exemple principal : l'histoire des Acadiens
-• Objectifs différenciés selon ton choix de défi !
-
-NOTE_ENSEIGNANT: Expliquez aux élèves qu'ils pourront choisir leur niveau de défi à la fin selon leur confiance et leurs préférences. Tous les défis sont valorisés également - c'est une question de choix personnel, pas de niveau.
+- Objectifs d'aujourd'hui :
+- Comprendre ce qu'est le troc et son importance
+- Découvrir la célèbre Route de la Soie
+- Explorer comment le commerce créait coopération et conflits
+- Analyser les innovations qui facilitaient les échanges
+NOTE_ENSEIGNANT: Présenter les objectifs en adaptant le vocabulaire selon les besoins. Expliquer que nous allons voyager dans le temps pour découvrir comment nos ancêtres faisaient du commerce bien avant l'invention de l'argent moderne.
+---FIN DIAPOSITIVE 1---
 
 ---DIAPOSITIVE 2---
 TYPE: AMORCE
 TITRE: Que savez-vous déjà ?
 CONTENU:
-• Quand vous voulez comprendre une histoire, comment organisez-vous les informations ?
-• Avez-vous déjà entendu parler des Acadiens ?
-• Quels outils utilisez-vous pour organiser vos idées ? (dessins, listes, calendriers...)
-• Discussion en équipes de 2 minutes
-
-NOTE_ENSEIGNANT: Circulez et écoutez les réponses. Notez les outils mentionnés au tableau. Cela servira de pont vers les outils organisationnels formels. Encouragez toutes les réponses sans jugement.
+- Réflexion : Comment obtenez-vous ce dont vous avez besoin aujourd'hui ?
+- Dans le passé, il n'y avait pas de magasins comme maintenant
+- Les peuples devaient échanger pour survivre
+- Question : Avez-vous déjà échangé quelque chose avec un ami ?
+NOTE_ENSEIGNANT: Encourager les élèves à partager leurs expériences d'échange (cartes, jouets, collations). Faire le lien avec le concept de troc. Activer leurs connaissances sur les moyens d'obtenir des biens aujourd'hui versus dans le passé.
+---FIN DIAPOSITIVE 2---
 
 ---DIAPOSITIVE 3---
 TYPE: CONTENU
-TITRE: Qu'est-ce qu'un outil organisationnel ?
+TITRE: Qu'est-ce que le troc ?
 CONTENU:
-• Un outil qui aide à classer, comparer et comprendre l'information
-• Exemples : ligne de temps, tableau comparatif, carte annotée, analyse d'œuvre d'art
-• Chaque outil a un but spécifique
-• Ils nous aident à devenir de meilleurs historiens !
-
-NOTE_ENSEIGNANT: Reliez aux exemples donnés par les élèves à l'amorce. Expliquez que ces outils aident non seulement à organiser mais aussi à analyser - c'est-à-dire à comprendre les causes, conséquences et liens entre les événements.
+- Le troc : échanger des biens ou services sans utiliser d'argent
+- Exemple : échanger des fourrures contre des outils
+- Pratiqué par toutes les sociétés anciennes du monde
+- Les Premières Nations échangeaient des produits de la chasse
+- Les Inuit troquaient de l'huile de phoque et de l'ivoire
+NOTE_ENSEIGNANT: Utiliser des exemples concrets et visuels. Expliquer que chaque société avait des ressources différentes selon son environnement. Montrer des images d'objets échangés si possible. Souligner l'ingéniosité de ce système.
+---FIN DIAPOSITIVE 3---
 
 ---DIAPOSITIVE 4---
 TYPE: CONTENU
-TITRE: Qui étaient les Acadiens ?
+TITRE: Pourquoi faire du commerce ?
 CONTENU:
-• Premiers colons français en Amérique du Nord (1604)
-• Installés en Acadie (actuelle Nouvelle-Écosse, Nouveau-Brunswick)
-• Agriculteurs et pêcheurs pacifiques
-• Neutres dans les conflits entre France et Angleterre
-• Population d'environ 18 000 personnes vers 1750
-
-NOTE_ENSEIGNANT: Montrez la région de l'Acadie sur une carte du Canada. Insistez sur leur neutralité - concept important pour comprendre l'injustice de la déportation qui suivra.
+- Obtenir des ressources non disponibles dans sa région
+- Améliorer sa qualité de vie
+- Créer des liens avec d'autres peuples
+- Partager des connaissances et des innovations
+- Exemples : épices d'Asie, fourrures du Nord, métaux précieux
+NOTE_ENSEIGNANT: Utiliser une carte pour montrer comment différentes régions produisaient différentes ressources. Expliquer le concept de spécialisation géographique. Faire comprendre que le commerce était une nécessité, pas un luxe.
+---FIN DIAPOSITIVE 4---
 
 ---DIAPOSITIVE 5---
 TYPE: CONTENU
-TITRE: Outil 1 : La ligne de temps - La Grande Déportation
+TITRE: La Route de la Soie : une route commerciale légendaire
 CONTENU:
-• 1755 : Début de la déportation des Acadiens
-• 1755-1764 : Dispersion forcée de 11 500 Acadiens
-• 1764 : Fin officielle de la déportation
-• 1764-1800 : Retour graduel de certains Acadiens
-• Utilité : voir l'ordre chronologique des événements
-
-NOTE_ENSEIGNANT: Dessinez cette ligne de temps au tableau ou affichez-la. Expliquez que la ligne de temps aide à visualiser la durée des événements et leur séquence. Soulignez que la déportation a duré près de 10 ans.
+- Réseau de routes commerciales entre l'Europe et l'Asie
+- Longue de plus de 6 000 kilomètres
+- Active pendant plus de 1 500 ans
+- Nom vient de la soie chinoise, produit très prisé
+- Permettait d'échanger soie, épices, métaux, idées
+NOTE_ENSEIGNANT: Utiliser une carte pour tracer la Route de la Soie. Expliquer que ce n'était pas une seule route mais un réseau. Insister sur la durée exceptionnelle de cette route commerciale et son impact sur le développement des civilisations.
+---FIN DIAPOSITIVE 5---
 
 ---DIAPOSITIVE 6---
 TYPE: CONTENU
-TITRE: Pourquoi utiliser une ligne de temps ?
+TITRE: Les innovations qui facilitaient le commerce
 CONTENU:
-• Montre l'ordre chronologique des événements
-• Aide à voir la durée des périodes importantes
-• Permet de comprendre les causes et conséquences
-• Facilite la comparaison entre différentes époques
-• Exemple : comprendre que la déportation n'était pas un événement d'une journée
-
-NOTE_ENSEIGNANT: Demandez aux élèves de réfléchir à ce qu'ils ressentiraient si leur famille était séparée pendant 10 ans. Cela aide à comprendre l'impact humain révélé par la ligne de temps.
+- Développement de moyens de transport : chameaux, navires
+- Création de cartes plus précises
+- Invention de la boussole pour la navigation
+- Construction de routes et de ponts
+- Développement de systèmes de mesure standardisés
+NOTE_ENSEIGNANT: Expliquer comment chaque innovation résolvait un problème spécifique du commerce. Montrer des exemples visuels des innovations. Faire le lien avec les attentes sur les innovations scientifiques et technologiques des sociétés anciennes.
+---FIN DIAPOSITIVE 6---
 
 ---DIAPOSITIVE 7---
 TYPE: CONTENU
-TITRE: Outil 2 : Le tableau comparatif - Points de vue sur la déportation
+TITRE: Le commerce créait de la coopération
 CONTENU:
-• Compare différentes perspectives sur le même événement
-• Colonne 1 : Point de vue britannique
-• Colonne 2 : Point de vue acadien
-• Permet de voir que l'histoire a plusieurs versions
-• Aide à développer l'esprit critique
-
-NOTE_ENSEIGNANT: Préparez un tableau à deux colonnes au tableau. Dans les prochaines diapositives, vous le remplirez avec les élèves. Insistez sur l'importance de comprendre différents points de vue.
+- Formation d'alliances entre peuples commerçants
+- Négociations pacifiques pour établir les prix
+- Partage de connaissances et de technologies
+- Création de langues commerciales communes
+- Établissement de règles commerciales acceptées par tous
+NOTE_ENSEIGNANT: Donner des exemples concrets de coopération. Expliquer comment les intérêts commerciaux mutuels encourageaient la paix. Souligner que le commerce était souvent plus profitable que la guerre.
+---FIN DIAPOSITIVE 7---
 
 ---DIAPOSITIVE 8---
 TYPE: CONTENU
-TITRE: Remplissons notre tableau comparatif
+TITRE: Mais le commerce causait aussi des conflits
 CONTENU:
-• Point de vue britannique : "Les Acadiens refusent de prêter serment à la Couronne britannique"
-• Point de vue acadien : "Nous voulons rester neutres et garder notre religion"
-• Point de vue britannique : "C'est une mesure de sécurité militaire"
-• Point de vue acadien : "C'est une injustice - nous sommes pacifiques"
-
-NOTE_ENSEIGNANT: Remplissez le tableau avec les élèves. Expliquez que les deux points de vue peuvent contenir des vérités partielles. L'important est de comprendre pourquoi chaque groupe pensait ainsi selon leur situation.
+- Disputes sur les prix et la qualité des marchandises
+- Conflits pour contrôler les routes commerciales importantes
+- Jalousie entre peuples riches et pauvres
+- Attaques de bandits sur les caravanes
+- Guerres pour s'emparer des ressources précieuses
+NOTE_ENSEIGNANT: Expliquer que les mêmes routes qui apportaient la richesse pouvaient causer des problèmes. Donner des exemples historiques de conflits liés au commerce. Faire comprendre que la richesse attirait aussi les convoitises.
+---FIN DIAPOSITIVE 8---
 
 ---DIAPOSITIVE 9---
 TYPE: CONTENU
-TITRE: Outil 3 : L'analyse de cartes - Dispersion des Acadiens
+TITRE: Le commerce chez les Premières Nations et les Inuit
 CONTENU:
-• Les cartes montrent où les Acadiens ont été envoyés
-• Colonies américaines, Louisiane, France, Antilles
-• Distance géographique = séparation des familles
-• Certaines régions plus accueillantes que d'autres
-• Les cartes révèlent l'ampleur géographique de la tragédie
-
-NOTE_ENSEIGNANT: Utilisez une carte de l'Amérique du Nord pour montrer les différentes destinations. Calculez avec les élèves les distances approximatives. Cela concrétise l'ampleur de la dispersion.
+- Vastes réseaux d'échange à travers l'Amérique du Nord
+- Les Premières Nations échangeaient fourrures, cuivre, coquillages
+- Les Inuit troquaient huile de phoque, ivoire, fourrures d'ours
+- Routes commerciales suivaient les rivières et côtes
+- Rencontres commerciales lors de grandes assemblées
+NOTE_ENSEIGNANT: Utiliser une carte de l'Amérique du Nord pour montrer les routes commerciales autochtones. Expliquer l'ingéniosité de ces systèmes bien avant l'arrivée des Européens. Valoriser ces connaissances ancestrales.
+---FIN DIAPOSITIVE 9---
 
 ---DIAPOSITIVE 10---
-TYPE: CONTENU
-TITRE: Que nous apprend l'analyse de cartes ?
+TYPE: PRATIQUE_GUIDÉE
+TITRE: Analysons ensemble une situation commerciale
 CONTENU:
-• Information géographique : où, distances, frontières
-• Impact humain : séparation, adaptation, voyage difficile
-• Contexte politique : quels territoires étaient disponibles
-• Conséquences à long terme : nouvelles communautés acadiennes
-• Les cartes racontent une histoire de mouvement et de survie
-
-NOTE_ENSEIGNANT: Encouragez les élèves à réfléchir à ce que représentaient ces déplacements pour des familles entières. Reliez à leurs propres expériences de déménagement si pertinent.
+- Scénario : Des marchands veulent traverser le territoire d'un autre peuple
+- Questions à explorer :
+- Quels avantages chaque groupe peut-il tirer de cet échange ?
+- Quels problèmes pourraient survenir ?
+- Comment éviter les conflits ?
+NOTE_ENSEIGNANT: Présenter le scénario et guider l'analyse collective. Encourager les élèves à proposer des solutions. Faire ressortir les principes de négociation et de respect mutuel. Lier aux situations historiques réelles.
+---FIN DIAPOSITIVE 10---
 
 ---DIAPOSITIVE 11---
-TYPE: CONTENU
-TITRE: Outil 4 : L'analyse d'œuvres d'art - "Le Grand Dérangement"
+TYPE: DISCUSSION
+TITRE: Le commerce aujourd'hui et autrefois
 CONTENU:
-• Les peintures et sculptures racontent aussi l'histoire
-• Émotions représentées : tristesse, séparation, espoir
-• Détails importants : vêtements, objets, expressions
-• Perspective de l'artiste : comment il voit l'événement
-• L'art aide à comprendre l'impact émotionnel
-
-NOTE_ENSEIGNANT: Si possible, montrez des reproductions d'œuvres sur la déportation acadienne (ex: tableaux de Claude Picard). Guidez l'observation : que voyez-vous ? Que ressentent les personnages ? Que veut nous dire l'artiste ?
+- En équipes, comparez :
+- Comment obtenait-on des biens autrefois vs aujourd'hui ?
+- Quels avantages et défis dans chaque époque ?
+- Le commerce cause-t-il encore des conflits aujourd'hui ?
+- Que peut-on apprendre du passé ?
+NOTE_ENSEIGNANT: Former des équipes hétérogènes. Circuler pour soutenir les discussions. Encourager les liens entre passé et présent. Préparer les équipes à partager une idée principale en plénière.
+---FIN DIAPOSITIVE 11---
 
 ---DIAPOSITIVE 12---
-TYPE: CONTENU
-TITRE: Comment analyser une œuvre d'art historique ?
-CONTENU:
-• Observer : que voit-on exactement ?
-• Interpréter : que nous dit l'artiste ?
-• Contextualiser : quand et pourquoi l'œuvre fut créée ?
-• Comparer : avec d'autres sources sur le même événement
-• Questionner : quelle émotion l'artiste veut-il transmettre ?
-
-NOTE_ENSEIGNANT: Modelez cette démarche avec une œuvre sur les Acadiens. Posez les questions à voix haute et répondez-y partiellement, laissant les élèves compléter vos observations.
-
----DIAPOSITIVE 13---
-TYPE: PRATIQUE_GUIDÉE
-TITRE: À votre tour - Créons ensemble une ligne de temps
-CONTENU:
-• Sujet : le retour des Acadiens après 1764
-• 1764 : Permission de revenir
-• 1765-1785 : Premières vagues de retour
-• 1785 : Fondation de nouvelles communautés
-• En équipes : placez ces événements sur votre ligne de temps
-
-NOTE_ENSEIGNANT: Distribuez du papier et des crayons. Circulez pour aider. Certains élèves peuvent avoir besoin d'aide pour l'espacement proportionnel des dates. Valorisez les efforts de tous.
-
----DIAPOSITIVE 14---
-TYPE: PRATIQUE_GUIDÉE
-TITRE: Pratiquons le tableau comparatif
-CONTENU:
-• Nouveau sujet : l'adaptation des Acadiens dans leurs nouveaux territoires
-• Comparez : défis rencontrés vs opportunités trouvées
-• En équipes, remplissez votre tableau
-• Pensez aux aspects : langue, religion, travail, communauté
-
-NOTE_ENSEIGNANT: Laissez 8-10 minutes pour cette activité. Passez d'équipe en équipe pour guider sans donner les réponses. Encouragez la réflexion et l'utilisation de leurs connaissances antérieures.
-
----DIAPOSITIVE 15---
-TYPE: DISCUSSION
-TITRE: Partageons nos découvertes
-CONTENU:
-• Présentez vos lignes de temps et tableaux
-• Qu'avez-vous appris de nouveau sur les Acadiens ?
-• Quel outil vous a le mieux aidé à comprendre ?
-• Comment ces outils changent-ils notre compréhension de l'histoire ?
-
-NOTE_ENSEIGNANT: Animez un partage de 10-12 minutes. Valorisez chaque contribution. Aidez les élèves à articuler comment chaque outil révèle des aspects différents de la même histoire.
-
----DIAPOSITIVE 16---
-TYPE: DISCUSSION
-TITRE: Réflexion sur nos apprentissages
-CONTENU:
-• Dans quelles autres situations pourriez-vous utiliser ces outils ?
-• Ligne de temps : votre vie familiale, l'histoire de l'école
-• Tableau comparatif : comparer des options, des personnages
-• Analyse de cartes : comprendre l'actualité, la géographie
-• Analyse d'art : comprendre d'autres cultures, époques
-
-NOTE_ENSEIGNANT: Guidez vers des applications concrètes dans leur vie. Ces outils ne servent pas qu'en histoire ! Encouragez la créativité dans leurs suggestions d'utilisation.
-
----DIAPOSITIVE 17---
 TYPE: RÉSUMÉ
 TITRE: Ce que nous avons appris aujourd'hui
 CONTENU:
-• Les outils organisationnels nous aident à analyser l'information
-• Ligne de temps : ordre chronologique et durée
-• Tableau comparatif : différents points de vue
-• Analyse de cartes : information géographique et déplacements
-• Analyse d'art : émotions et perspectives artistiques
-• L'exemple des Acadiens montre l'importance de ces outils
+- Le troc était essentiel à la survie des sociétés anciennes
+- La Route de la Soie montre l'importance du commerce international
+- Les innovations technologiques facilitaient les échanges
+- Le commerce créait à la fois coopération et conflits
+- Les peuples autochtones avaient des systèmes commerciaux sophistiqués
+NOTE_ENSEIGNANT: Récapituler les apprentissages en sollicitant la participation des élèves. Valoriser leurs contributions. Présenter les billets de sortie comme des choix équivalents : "Choisissez le défi qui vous intéresse le plus aujourd'hui !" Aucun défi n'est plus facile ou difficile, ils explorent simplement le sujet de façons différentes.
 
-NOTE_ENSEIGNANT: Récapitulez en montrant comment chaque outil a révélé des aspects différents de l'histoire acadienne. Préparez-vous à présenter les choix de billets de sortie de manière positive et encourageante.
+DÉFI 1
+1. Qu'est-ce que le troc ?
+2. Nomme deux choses que les Inuit échangeaient.
+3. Vrai ou faux : La Route de la Soie était une seule route.
+4. Donne un exemple de coopération dans le commerce ancien.
 
----DIAPOSITIVE 18---
-TYPE: RÉSUMÉ
-TITRE: Choisis ton défi - Billet de sortie !
-CONTENU:
-• Trois défis disponibles - choisis selon ta confiance !
-• Défi 1 : Questions de reconnaissance avec choix multiples
-• Défi 2 : Questions d'explication avec phrases complètes
-• Défi 3 : Questions d'analyse avec justifications détaillées
-• Tous les défis sont valorisés - c'est TON choix !
+DÉFI 2
+1. Explique pourquoi les peuples anciens faisaient du commerce avec d'autres régions.
+2. Décris deux innovations qui aidaient les marchands sur la Route de la Soie.
+3. Comment le commerce pouvait-il créer des conflits entre les peuples ?
+4. Compare le système d'échange des Premières Nations avec celui d'aujourd'hui.
 
-NOTE_ENSEIGNANT: Présentez les trois défis comme des choix équivalents. Insistez : "Choisis le défi qui te permet de mieux montrer ce que tu as appris." Distribuez les trois versions. Aucun élève ne devrait se sentir obligé de choisir un défi particulier.
-
-**BILLET DE SORTIE - DÉFI 1**
-
-**Choisis la meilleure réponse :**
-
-1. Quel outil aide à voir l'ordre des événements ?
-   a) Tableau comparatif  b) Ligne de temps  c) Carte
-
-2. Les Acadiens vivaient principalement en :
-   a) Ontario  b) Québec  c) Nouvelle-Écosse
-
-3. Une ligne de temps sert à :
-   a) Comparer des opinions  b) Montrer des lieux  c) Organiser des dates
-
-4. Encercle VRAI ou FAUX : Un tableau comparatif montre différents points de vue.
-   VRAI     FAUX
-
-5. Nomme UN outil organisationnel appris aujourd'hui : ________________
-
-**BILLET DE SORTIE - DÉFI 2**
-
-1. Explique en une phrase comment une ligne de temps nous aide à comprendre l'histoire des Acadiens.
-
-2. Pourquoi est-il important de comparer différents points de vue sur la déportation acadienne ?
-
-3. Que peut nous apprendre une carte sur la dispersion des Acadiens que les autres outils ne montrent pas ?
-
-4. Donne un exemple de situation dans ta vie où tu pourrais utiliser un tableau comparatif.
-
-5. Complete : L'analyse d'œuvres d'art nous aide à comprendre _____________ des événements historiques.
-
-**BILLET DE SORTIE - DÉFI 3**
-
-1. Analyse comment l'utilisation combinée d'une ligne de temps et d'un tableau comparatif enrichit notre compréhension de la déportation acadienne. Justifie ta réponse avec des exemples précis.
-
-2. Évalue l'efficacité des quatre outils organisationnels présentés. Lequel considères-tu le plus révélateur pour comprendre l'expérience acadienne ? Explique ton raisonnement en comparant au moins deux outils.
-
-3. Synthétise ce que l'exemple acadien nous enseigne sur l'importance d'utiliser plusieurs outils d'analyse historique. Comment cette approche change-t-elle notre perspective d'historien ?
-
-
+DÉFI 3
+1. Analyse pourquoi la Route de la Soie a été active pendant plus de 1500 ans.
+2. Justifie cette affirmation : "Le commerce était plus profitable que la guerre."
+3. Évalue l'impact des innovations technologiques sur le développement du commerce ancien.
+4. Propose des stratégies que les peuples anciens auraient pu utiliser pour éviter les conflits commerciaux.
+---FIN DIAPOSITIVE 12---
 
 
 """
@@ -793,4 +715,4 @@ NOTE_ENSEIGNANT: Faites trouver des angles droits dans la classe.
 """
 
 slides = parse_slides(CLAUDE_OUTPUT)
-create_presentation(slides, 'Les Acadiens')
+create_presentation(slides, '4e route de soie')
