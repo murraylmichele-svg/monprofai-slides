@@ -12,16 +12,16 @@ def health():
 @app.route('/generate', methods=['POST'])
 def generate():
     try:
-        data = request.get_json()
+        data = request.get_json(force=True, silent=True)
+        if not data:
+            raw = request.get_data(as_text=True)
+            data = json.loads(raw.replace('\n', '\\n'))
 
         if not data:
             return jsonify({'error': 'No data received'}), 400
 
         title   = data.get('title', 'MonProf.ai — Leçon')
         content = data.get('content', '')
-if not content:
-    # Try getting raw body as fallback
-    content = request.get_data(as_text=True)
 
         if not content:
             return jsonify({'error': 'No content provided'}), 400
