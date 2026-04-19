@@ -19,6 +19,9 @@ def generate():
 
         title   = data.get('title', 'MonProf.ai — Leçon')
         content = data.get('content', '')
+if not content:
+    # Try getting raw body as fallback
+    content = request.get_data(as_text=True)
 
         if not content:
             return jsonify({'error': 'No content provided'}), 400
