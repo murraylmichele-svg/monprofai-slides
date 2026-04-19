@@ -20,11 +20,16 @@ def generate():
         if not data:
             return jsonify({'error': 'No data received'}), 400
 
-        title   = data.get('title', 'MonProf.ai — Leçon')
-        content = data.get('content', '')
+        title = (data.get('title') or 
+                 data.get('Title') or 
+                 data.get('Text') or 
+                 'MonProf.ai — Leçon')
+                 
+        content = (data.get('content') or 
+                   data.get('Content') or '')
 
         if not content:
-            return jsonify({'error': 'No content provided'}), 400
+            return jsonify({'error': 'No content provided', 'received_keys': list(data.keys())}), 400
 
         slides_data = parse_slides(content)
 
