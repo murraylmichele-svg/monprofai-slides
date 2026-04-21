@@ -52,6 +52,26 @@ def auto_font_size(text):
         return 18
 
 def get_credentials():
+    # First try: use OAuth token (personal Gmail account)
+    token_data = os.environ.get('GOOGLE_TOKEN')
+    if token_data:
+        import json
+        from google.oauth2.credentials import Credentials
+        token_dict = json.loads(token_data)
+        creds = Credentials(
+            token=token_dict.get('token'),
+            refresh_token=token_dict.get('refresh_token'),
+            token_uri=token_dict.get('token_uri'),
+            client_id=token_dict.get('client_id'),
+            client_secret=token_dict.get('client_secret'),
+            scopes=token_dict.get('scopes')
+        )
+        from google.auth.transport.requests import Request
+        if creds.expired or not creds.valid:
+            creds.refresh(Request())
+        return creds
+
+    # Second try: use service account
     service_account_data = os.environ.get('GOOGLE_SERVICE_ACCOUNT')
     if service_account_data:
         from google.oauth2 import service_account
@@ -59,6 +79,8 @@ def get_credentials():
         creds = service_account.Credentials.from_service_account_info(
             info, scopes=SCOPES)
         return creds
+
+    # Local fallback
     creds = None
     if os.path.exists(TOKEN_FILE):
         creds = Credentials.from_authorized_user_file(TOKEN_FILE, SCOPES)
