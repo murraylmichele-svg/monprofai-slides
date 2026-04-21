@@ -52,11 +52,13 @@ def auto_font_size(text):
         return 18
 
 def get_credentials():
+    import json
+    from google.oauth2.credentials import Credentials
+    from google.auth.transport.requests import Request
+
     # First try: use OAuth token (personal Gmail account)
     token_data = os.environ.get('GOOGLE_TOKEN')
     if token_data:
-        import json
-        from google.oauth2.credentials import Credentials
         token_dict = json.loads(token_data)
         creds = Credentials(
             token=token_dict.get('token'),
@@ -66,7 +68,6 @@ def get_credentials():
             client_secret=token_dict.get('client_secret'),
             scopes=token_dict.get('scopes')
         )
-        from google.auth.transport.requests import Request
         if creds.expired or not creds.valid:
             creds.refresh(Request())
         return creds
@@ -93,7 +94,6 @@ def get_credentials():
         with open(TOKEN_FILE, 'w') as token:
             token.write(creds.to_json())
     return creds
-
 def extract_defis(text):
     defi1 = defi2 = defi3 = None
     d1 = re.search(r'\*{0,2}DÉFI 1\*{0,2}[^\n]*\n([\s\S]*?)(?=\*{0,2}DÉFI 2|$)', text)
