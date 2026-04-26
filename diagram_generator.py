@@ -301,46 +301,44 @@ def droite_numerique(start=0, end=10):
 # ── GENERATE ALL ─────────────────────────────────────────────────────────────
 
 def generate_all():
+    """Generate only a basic set of diagrams - kept for compatibility."""
     paths = {}
-
-    # Basic number line
-    paths['droite_numerique'] = droite_numerique(0, 10)
-
-    # Fraction displays (large)
-    for num, den in [(1,2),(1,3),(2,3),(1,4),(3,4),(1,5),(2,5),(3,5),(4,5),
-                     (1,6),(5,6),(1,8),(3,8),(5,8),(7,8),(2,4),(1,10),(3,10)]:
-        key = f'fraction_affichage_{num}_{den}'
-        paths[key] = fraction_affichage(num, den)
-
-    # Inline fractions
-    for num, den in [(1,2),(1,3),(2,3),(1,4),(3,4),(1,5),(2,5),(3,5),(4,5),
-                     (1,6),(5,6),(1,8),(3,8),(5,8),(7,8),(2,4),(1,10),(3,10)]:
-        key = f'fraction_inline_{num}_{den}'
-        paths[key] = fraction_inline(num, den)
-
-    # Area models
-    for num, den in [(1,2),(1,3),(2,3),(1,4),(3,4),(1,5),(2,5),(3,5),(4,5),
-                     (1,6),(5,6),(1,8),(3,8),(5,8),(7,8)]:
-        key = f'fraction_aire_{num}_{den}'
-        paths[key] = fraction_aire(num, den)
-
-    # Set models
-    for shape in ['cercles', 'carres', 'etoiles', 'coeurs']:
-        for num, den in [(1,2),(1,3),(2,3),(1,4),(3,4),(1,5),(2,5),(3,5),
-                         (4,5),(1,6),(5,6),(1,8),(3,8),(5,8),(7,8)]:
-            key = f'fraction_ensemble_{shape}_{num}_{den}'
-            paths[key] = fraction_ensemble(num, den, shape)
-
-    # Number lines
-    for num, den in [(1,2),(1,3),(2,3),(1,4),(3,4),(1,5),(2,5),(3,5),(4,5),
-                     (1,6),(5,6),(1,8),(3,8),(5,8),(7,8)]:
-        key = f'fraction_ligne_{num}_{den}_max1'
-        paths[key] = fraction_ligne(num, den, max_val=1)
-
-    # Three models combined
-    for num, den in [(1,2),(1,3),(2,3),(1,4),(3,4),(1,5),(2,5),(3,5),(4,5),
-                     (1,6),(5,6),(1,8),(3,8),(5,8),(7,8)]:
-        key = f'fraction_trois_modeles_{num}_{den}'
-        paths[key] = fraction_trois_modeles(num, den)
-
+    try:
+        paths['droite_numerique'] = droite_numerique(0, 10)
+    except Exception as e:
+        print(f'Warning: could not generate droite_numerique: {e}')
     return paths
+
+def generate_diagram(visuel_key):
+    """Generate a single diagram by key. Called on demand."""
+    try:
+        # Parse fraction keys
+        if visuel_key.startswith('fraction_affichage_'):
+            parts = visuel_key.split('_')
+            num, den = int(parts[2]), int(parts[3])
+            return fraction_affichage(num, den)
+        elif visuel_key.startswith('fraction_aire_'):
+            parts = visuel_key.split('_')
+            num, den = int(parts[2]), int(parts[3])
+            return fraction_aire(num, den)
+        elif visuel_key.startswith('fraction_ensemble_'):
+            parts = visuel_key.split('_')
+            shape = parts[2]
+            num, den = int(parts[3]), int(parts[4])
+            return fraction_ensemble(num, den, shape)
+        elif visuel_key.startswith('fraction_ligne_'):
+            parts = visuel_key.split('_')
+            num, den = int(parts[2]), int(parts[3])
+            max_val = int(parts[4].replace('max','')) if len(parts) > 4 else 1
+            return fraction_ligne(num, den, max_val)
+        elif visuel_key.startswith('fraction_trois_modeles_'):
+            parts = visuel_key.split('_')
+            num, den = int(parts[3]), int(parts[4])
+            return fraction_trois_modeles(num, den)
+        elif visuel_key == 'droite_numerique':
+            return droite_numerique(0, 10)
+        else:
+            return None
+    except Exception as e:
+        print(f'Warning: could not generate diagram {visuel_key}: {e}')
+        return None
