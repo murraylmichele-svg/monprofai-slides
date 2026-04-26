@@ -365,10 +365,10 @@ def create_presentation(slide_data, title):
                     'fields': 'fontFamily,fontSize,bold,foregroundColor'}})
 
             if has_visuel:
-                diagram_paths = diagram_generator.generate_all()
                 visuel_key = slide['visuel']
-                if visuel_key in diagram_paths:
-                    image_url = upload_image_to_drive(drive_service, diagram_paths[visuel_key])
+                diagram_path = diagram_generator.generate_diagram(visuel_key)
+                if diagram_path:
+                    image_url = upload_image_to_drive(drive_service, diagram_path)
                     img_id = f'img_{i}'
                     requests.append({'createImage': {
                         'objectId': img_id,
