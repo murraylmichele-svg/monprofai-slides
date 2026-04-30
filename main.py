@@ -1,5 +1,6 @@
 import os
 import json
+import requests
 from flask import Flask, request, jsonify
 from create_slides import parse_slides, create_presentation
 
@@ -8,6 +9,39 @@ app = Flask(__name__)
 @app.route('/health', methods=['GET'])
 def health():
     return jsonify({'status': 'ok', 'service': 'MonProf.ai Slides Generator'})
+
+@app.route('/api/claude', methods=['POST', 'OPTIONS'])
+def claude_proxy():
+    # Handle CORS preflight
+    if request.method == 'OPTIONS':
+        response = jsonify({'status': 'ok'})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+        response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        return response
+
+    try:
+        data = request.get_json()
+        api_key = os.environ.get('ANTHROPIC_API_KEY')
+        if not api_key:
+            return jsonify({'error': 'API key not configured'}), 500
+
+        resp = requests.post(
+            'https://api.anthropic.com/v1/messages',
+            headers={
+                'Content-Type': 'application/json',
+                'x-api-key': api_key,
+                'anthropic-version': '2023-06-01'
+            },
+            json=data,
+            timeout=120
+        )
+        response = jsonify(resp.json())
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/generate', methods=['POST'])
 def generate():
@@ -20,12 +54,12 @@ def generate():
         if not data:
             return jsonify({'error': 'No data received'}), 400
 
-        title = (data.get('title') or 
-                 data.get('Title') or 
-                 data.get('Text') or 
+        title = (data.get('title') or
+                 data.get('Title') or
+                 data.get('Text') or
                  'MonProf.ai — Leçon')
-                 
-        content = (data.get('content') or 
+
+        content = (data.get('content') or
                    data.get('Content') or '')
 
         if not content:
