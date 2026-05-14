@@ -6,6 +6,15 @@ from create_slides import parse_slides, create_presentation
 
 app = Flask(__name__)
 
+# ── CORS: add headers to EVERY response ──────────────────────
+@app.after_request
+def add_cors_headers(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+    response.headers['Access-Control-Max-Age'] = '86400'
+    return response
+
 @app.route('/health', methods=['GET'])
 def health():
     return jsonify({'status': 'ok', 'service': 'MonProf.ai Slides Generator'})
@@ -14,11 +23,7 @@ def health():
 def claude_proxy():
     # Handle CORS preflight
     if request.method == 'OPTIONS':
-        response = jsonify({'status': 'ok'})
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
-        response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
-        return response
+        return jsonify({'status': 'ok'}), 200
 
     try:
         data = request.get_json()
@@ -36,9 +41,7 @@ def claude_proxy():
             json=data,
             timeout=120
         )
-        response = jsonify(resp.json())
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        return response
+        return jsonify(resp.json())
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
