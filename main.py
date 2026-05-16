@@ -10,7 +10,7 @@ app = Flask(__name__)
 @app.after_request
 def add_cors_headers(response):
     response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, X-Proxy-Secret'
     response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
     response.headers['Access-Control-Max-Age'] = '86400'
     return response
@@ -24,6 +24,12 @@ def claude_proxy():
     # Handle CORS preflight
     if request.method == 'OPTIONS':
         return jsonify({'status': 'ok'}), 200
+
+    # ── Secret check ──────────────────────────────────────
+        expected = os.environ.get('PROXY_SECRET', '')
+        received = request.headers.get('X-Proxy-Secret', '')
+        if expected and received != expected:
+            return jsonify({'error': 'Non autorisé'}), 401
 
     try:
         data = request.get_json()
