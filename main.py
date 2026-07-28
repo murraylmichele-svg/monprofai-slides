@@ -15,16 +15,36 @@ def add_cors_headers(response):
     response.headers['Access-Control-Max-Age'] = '86400'
     return response
 
-@app.route('/health', methods=['GET'])
-def health():
-    return jsonify({'status': 'ok', 'service': 'MonProf.ai Slides Generator'})
-
 @app.route('/api/claude', methods=['POST', 'OPTIONS'])
 def claude_proxy():
     # Handle CORS preflight
     if request.method == 'OPTIONS':
         return jsonify({'status': 'ok'}), 200
 
+    # ── Secret check ──────────────────────────────────────
+    expected = os.environ.get('PROXY_SECRET', '')
+    received = request.headers.get('X-Proxy-Secret', '')
+    if expected and received != expected:
+        return jsonify({'error': 'Non autorisé'}), 401
+
+    try:
+        data = request.get_json()
+        api_key = os.environ.get('ANTHROPIC_API_KEY')
+        if not api_key:
+            return jsonify({'error': 'API key not configured'}), 500
+        resp = requests.post(
+            'https://api.anthropic.com/v1/messages',
+            headers={
+                'Content-Type': 'application/json',
+                'x-api-key': api_key,
+                'anthropic-version': '2023-06-01'
+            },
+            json=data,
+            timeout=120
+        )
+        return jsonify(resp.json())
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
     # ── Secret check ──────────────────────────────────────
         expected = os.environ.get('PROXY_SECRET', '')
         received = request.headers.get('X-Proxy-Secret', '')
