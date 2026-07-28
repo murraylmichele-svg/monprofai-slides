@@ -6,6 +6,7 @@ from create_slides import parse_slides, create_presentation
 
 app = Flask(__name__)
 
+
 # ── CORS: add headers to EVERY response ──────────────────────
 @app.after_request
 def add_cors_headers(response):
@@ -14,6 +15,7 @@ def add_cors_headers(response):
     response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
     response.headers['Access-Control-Max-Age'] = '86400'
     return response
+
 
 @app.route('/api/claude', methods=['POST', 'OPTIONS'])
 def claude_proxy():
